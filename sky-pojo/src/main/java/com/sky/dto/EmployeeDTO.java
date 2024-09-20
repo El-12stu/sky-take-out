@@ -1,11 +1,12 @@
 package com.sky.dto;
 
+import com.sky.entity.Employee;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class EmployeeDTO implements Serializable {
+public class EmployeeDTO extends Employee implements Serializable {
 
     private Long id;
 
