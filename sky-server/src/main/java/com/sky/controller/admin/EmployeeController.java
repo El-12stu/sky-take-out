@@ -100,7 +100,7 @@ public class EmployeeController {
     public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
        log.info("员工分页查询，参数为{}"+employeePageQueryDTO);
        PageResult pageResult=employeeService.pageQuery(employeePageQueryDTO);
-        return Result.success(pageResult );
+        return Result.success(pageResult);
     }
     /**
      * 启用禁用员工账号
