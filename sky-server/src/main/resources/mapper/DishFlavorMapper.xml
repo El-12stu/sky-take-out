@@ -13,4 +13,14 @@
         delete from dish_flavor where dish_id=#{id}
     </delete>
 
+    <delete id="deleteByDishIds">
+        delete from dish_flavor WHERE dish_id in
+        <foreach collection="dishIds" item="dishId" open="(" close=")" separator=",">
+             #{dishId}
+        </foreach>
+    </delete>
+    <select id="getByDishId" resultType="com.sky.entity.DishFlavor">
+        select * from dish_flavor where dish_id=#{dishId}
+    </select>
+
 </mapper>
