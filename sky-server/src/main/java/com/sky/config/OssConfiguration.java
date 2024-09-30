@@ -16,7 +16,6 @@ public class OssConfiguration {
 
 
     @Bean
-
     public AliOssUtil aliOssUtil(AliOssProperties aliOssProperties){
         log.info("开始创建阿里云文件上传工具类对象：{}",aliOssProperties);
 

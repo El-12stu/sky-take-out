@@ -108,7 +108,7 @@ public class EmployeeController {
     @PostMapping("/status/{status}")
     @ApiOperation("启用禁用员工账号")
     public Result startOrstop(@PathVariable Integer status,Long id){
-        log.info("启用禁用员工账户：{}，{}",status,id);
+        log.info("修改员工账户和状态：{}，{}",id,status);
         employeeService.startOrstop(status,id);
 
         return Result.success();
