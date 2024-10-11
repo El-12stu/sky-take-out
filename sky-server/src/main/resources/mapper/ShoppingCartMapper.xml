@@ -29,4 +29,12 @@
             </if>
         </where>
     </select>
+
+    <delete id="clean" parameterType="com.sky.entity.ShoppingCart">
+        delete from shopping_cart where user_id=#{userId}
+    </delete>
+
+
+
+
 </mapper>

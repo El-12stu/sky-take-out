@@ -96,4 +96,31 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         List<ShoppingCart> list=shoppingCartMapper.list(shoppingCart);
         return list;
     }
+
+    /**
+     * 清空购物车
+     */
+    public void clean(){
+        ShoppingCart shoppingCart=new ShoppingCart();
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        shoppingCartMapper.clean(shoppingCart);
+    }
+
+    /**
+     * 减少购物车
+     * @param shoppingCartDTO
+     */
+    public void sub(ShoppingCartDTO shoppingCartDTO){
+        ShoppingCart shoppingCart=new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+        //调用select方法，使数据减一
+        List<ShoppingCart> shoppingCarts=shoppingCartMapper.list(shoppingCart);
+        ShoppingCart cart=shoppingCarts.get(0);
+        shoppingCart.setId(cart.getId());
+        shoppingCart.setNumber(cart.getNumber()-1);
+
+
+        shoppingCartMapper.updateNumberById(shoppingCart);
+    }
 }
