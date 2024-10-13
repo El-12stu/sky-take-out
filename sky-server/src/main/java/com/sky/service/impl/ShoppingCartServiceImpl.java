@@ -119,8 +119,13 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         ShoppingCart cart=shoppingCarts.get(0);
         shoppingCart.setId(cart.getId());
         shoppingCart.setNumber(cart.getNumber()-1);
+        //判断减一是否为0，为0则清空该数据
+        if(shoppingCart.getNumber()>0){
+            shoppingCartMapper.updateNumberById(shoppingCart);
+        }
+        else {
+            shoppingCartMapper.delete(shoppingCart);
+        }
 
-
-        shoppingCartMapper.updateNumberById(shoppingCart);
     }
 }

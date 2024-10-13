@@ -33,5 +33,9 @@ public interface ShoppingCartMapper {
      */
     void clean(ShoppingCart shoppingCart);
 
-
+    /**
+     * 删除购物车的一件商品
+     * @param shoppingCart
+     */
+    void delete(ShoppingCart shoppingCart);
 }
