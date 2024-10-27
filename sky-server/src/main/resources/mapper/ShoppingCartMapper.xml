@@ -8,6 +8,7 @@
         VALUES (#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{amount},#{createTime})
     </insert>
 
+
     <update id="updateNumberById" parameterType="com.sky.entity.ShoppingCart">
         update shopping_cart set number = #{number} where id=#{id}
     </update>
@@ -50,9 +51,19 @@
             </if>
         </where>
     </delete>
+
+
     <delete id="deleteByUserId">
         delete from shopping_cart where user_id=#{userId}
     </delete>
+
+    <insert id="insertBatch">
+        insert into shopping_cart (name, image, user_id, dish_id, setmeal_id, dish_flavor, amount, create_time)
+        VALUES
+        <foreach collection="shoppingCartList" item="sc" separator=",">
+            (#{sc.name},#{sc.image},#{sc.userId},#{sc.dishId},#{sc.setmealId},#{sc.dishFlavor},#{sc.amount},#{sc.createTime})
+        </foreach>
+    </insert>
 
 
 </mapper>
