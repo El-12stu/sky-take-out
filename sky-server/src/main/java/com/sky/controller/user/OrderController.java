@@ -43,12 +43,16 @@ public class OrderController {
     @ApiOperation("订单支付")
     public Result<OrderPaymentVO> payment(@RequestBody OrdersPaymentDTO ordersPaymentDTO) throws Exception {
         log.info("订单支付：{}", ordersPaymentDTO);
+        /**
+         * payment方法没有用处
+         */
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
         /**
          * 模拟支付成功，更新数据库订单状态-此时没有回调
          */
         orderService.paySuccess(ordersPaymentDTO.getOrderNumber());
+
         return Result.success(orderPaymentVO);
     }
 
