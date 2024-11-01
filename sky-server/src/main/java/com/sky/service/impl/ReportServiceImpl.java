@@ -4,6 +4,7 @@ import com.sky.entity.Orders;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.UserMapper;
 import com.sky.service.ReportService;
+import com.sky.vo.OrderReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.extern.slf4j.Slf4j;
@@ -34,14 +35,8 @@ public class ReportServiceImpl implements ReportService {
      * @return
      */
     public TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end) {
-        //当前集合存放从begin到end范围每天的日期
-        List<LocalDate> dateList=new ArrayList<>();
-        //日期循环加入
-        while (!begin.equals(end)){
-            dateList.add(begin);
-            begin=begin.plusDays(1);
-        }
-        dateList.add(end);
+        //调用公共方法
+        List<LocalDate> dateList=getLocalDateList(begin,end);
         /**
          * 查询每个日期对应的营业额
          * 状态：已完成
@@ -82,13 +77,8 @@ public class ReportServiceImpl implements ReportService {
      * @return
      */
     public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
-        List<LocalDate> dateList=new ArrayList<>();
-        //datelist循环加入日期
-        while (!begin.equals(end)){
-            dateList.add(begin);
-            begin=begin.plusDays(1);
-        }
-        dateList.add(end);
+        //调用公共方法
+        List<LocalDate> dateList=getLocalDateList(begin,end);
         /**
          * 新增用户数量
          * 总用户数量
@@ -121,4 +111,87 @@ public class ReportServiceImpl implements ReportService {
 
         return userReportVO;
     }
+
+    /**
+     * 统计指定区间内的订单数据
+     * @param begin
+     * @param end
+     * @return
+     */
+    public OrderReportVO getOrderStatistics(LocalDate begin, LocalDate end) {
+        //调用公共方法
+        List<LocalDate> dateList=getLocalDateList(begin,end);
+        //订单总数集合和有效订单集合
+        List<Integer> totalList=new ArrayList<>();
+        List<Integer> validList=new ArrayList<>();
+        //遍历datelist集合，查询相关订单数
+        for (LocalDate date:dateList){
+            LocalDateTime beginTime = LocalDateTime.of(date, LocalTime.MIN);
+            LocalDateTime endTime = LocalDateTime.of(date, LocalTime.MAX);
+            //获取订单总数
+            Integer totalOrder = getOrderCount(beginTime, endTime, null);
+            //获取有效订单
+            Integer validOrder=getOrderCount(beginTime,endTime,Orders.COMPLETED);
+
+            totalList.add(totalOrder);
+            validList.add(validOrder);
+        }
+
+        //计算时间区间内订单总数量  使用Stream流
+        Integer totalOrderCount = totalList.stream().reduce(Integer::sum).get();
+        //计算时间区间内有效订单数量  使用Stream流
+        Integer validOrderCount =validList.stream().reduce(Integer::sum).get();
+        //计算订单完成率
+        Double orderCompletionRate=0.0;
+        if (totalOrderCount != 0){
+            orderCompletionRate= validOrderCount.doubleValue()/totalOrderCount.doubleValue();
+        }
+        //封装返回数据
+        OrderReportVO orderReportVO = OrderReportVO.builder()
+                .dateList(StringUtils.join(dateList,","))
+                .orderCountList(StringUtils.join(totalList,","))
+                .validOrderCountList(StringUtils.join(validList,","))
+                .totalOrderCount(totalOrderCount)
+                .validOrderCount(validOrderCount)
+                .orderCompletionRate(orderCompletionRate)
+                .build();
+
+
+        return orderReportVO;
+    }
+
+    /**
+     * 公共--根据条件统计订单数量
+     * @param begin
+     * @param end
+     * @param status
+     * @return
+     */
+    private Integer getOrderCount(LocalDateTime begin,LocalDateTime end,Integer status){
+        Map map=new HashMap<>();
+        map.put("begin",begin);
+        map.put("end",end);
+        map.put("status",status);
+
+        Integer result=orderMapper.countByMap(map);
+        return result;
+    }
+
+    /**
+     * 公共--根据动态日期获取日期列表
+     * @param begin
+     * @param end
+     * @return
+     */
+    private List<LocalDate> getLocalDateList(LocalDate begin,LocalDate end){
+        List<LocalDate> dateList=new ArrayList<>();
+        //datelist循环加入日期
+        while (!begin.equals(end)){
+            dateList.add(begin);
+            begin=begin.plusDays(1);
+        }
+        dateList.add(end);
+        return dateList;
+    }
+
 }
